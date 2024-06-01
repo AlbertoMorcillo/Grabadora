@@ -1,0 +1,12 @@
+{
+    "google": {
+      "clientId": "GOOGLE_CLIENT_ID",
+      "clientSecret": "GOOGLE_CLIENT_SECRET",
+      "refreshToken": "GOOGLE_REFRESH_TOKEN",
+      "driveFolderId": "GOOGLE_DRIVE_FOLDER_ID"
+    },
+    "server": {
+      "port": "PORT"
+    }
+  }
+  
