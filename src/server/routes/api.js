@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarArchivos, subirArchivo, borrarArchivo, descargarArchivo } from '../controllers/driveController.js';
+import { listarArchivos, subirArchivo, borrarArchivo, descargarArchivo, renombrarArchivo } from '../controllers/driveController.js';
 import multer from 'multer';
 
 
@@ -17,5 +17,7 @@ router.delete('/archivos/:id', borrarArchivo);
 
 // Ruta para descargar un archivo de la carpeta de Google Drive
 router.get('/archivos/:id', descargarArchivo);
+
+router.patch('/archivos/:id', renombrarArchivo);
 
 export default router;

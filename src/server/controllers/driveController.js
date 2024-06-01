@@ -17,8 +17,11 @@ export const listarArchivos = async (req, res) => {
 export const subirArchivo = async (req, res) => {
   try {
     const { file } = req;
-    const { originalname, mimetype, path: filePath } = file;
-    const archivoGuardado = await drive.guardarArchivo(filePath, mimetype, config.get('google.driveFolderId'), originalname);
+    const { mimetype, path: filePath } = file;
+    const fecha = new Date();
+    const fechaStr = fecha.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    const nombreArchivo = `Grabacion ${fechaStr}.wav`;
+    const archivoGuardado = await drive.guardarArchivo(filePath, mimetype, config.get('google.driveFolderId'), nombreArchivo);
     res.json(archivoGuardado);
   } catch (error) {
     res.status(500).send(error.message);
@@ -40,6 +43,17 @@ export const descargarArchivo = async (req, res) => {
     const { id } = req.params;
     const archivo = await drive.obtenerArchivo(id);
     archivo.pipe(res);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+export const renombrarArchivo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre } = req.body;
+    const archivoRenombrado = await drive.renombrarArchivo(id, nombre);
+    res.json(archivoRenombrado);
   } catch (error) {
     res.status(500).send(error.message);
   }

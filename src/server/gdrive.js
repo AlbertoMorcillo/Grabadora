@@ -78,6 +78,18 @@ class GDrive {
     });
     return response.data;
   }
+
+  async renombrarArchivo(idArxiu, nuevoNombre) {
+    const response = await this.drive.files.update({
+      fileId: idArxiu,
+      requestBody: {
+        name: nuevoNombre
+      },
+      fields: 'id, name'
+    });
+
+    return response.data;
+  }
 }
 
 export default GDrive;
