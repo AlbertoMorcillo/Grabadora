@@ -18,15 +18,17 @@
     <div class="text-center">
       <button id="record" class="btn btn-primary"><i class="fas fa-microphone"></i></button>
       <button id="stop" class="btn btn-danger" disabled><i class="fas fa-stop"></i></button>
+      <button id="delete-all" class="btn btn-danger"><i class="fas fa-trash"></i> Borrar Todas</button>
       <div id="recording-indicator" class="mt-3 d-none">
         <span class="spinner-border text-danger" role="status"></span>
         <span class="ml-2">Grabando...</span>
       </div>
     </div>
     <ul id="lista-archivos" class="list-group mt-4"></ul>
+    <div id="pagination-container" class="mt-3 text-center"></div>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal para borrar una grabación -->
   <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -42,6 +44,27 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-danger" id="confirmDeleteButton">Borrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para borrar todas las grabaciones -->
+  <div class="modal fade" id="confirmDeleteAllModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteAllModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteAllModalLabel">Confirmar Eliminación de Todas las Grabaciones</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que quieres borrar todas las grabaciones?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteAllButton">Borrar Todas</button>
         </div>
       </div>
     </div>

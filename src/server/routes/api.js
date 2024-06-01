@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarArchivos, subirArchivo, borrarArchivo, descargarArchivo, renombrarArchivo } from '../controllers/driveController.js';
+import { listarArchivos, subirArchivo, borrarArchivo, descargarArchivo, renombrarArchivo, borrarTodasLasGrabaciones } from '../controllers/driveController.js';
 import multer from 'multer';
 
 
@@ -19,5 +19,7 @@ router.delete('/archivos/:id', borrarArchivo);
 router.get('/archivos/:id', descargarArchivo);
 
 router.patch('/archivos/:id', renombrarArchivo);
+
+router.delete('/archivos', borrarTodasLasGrabaciones);
 
 export default router;

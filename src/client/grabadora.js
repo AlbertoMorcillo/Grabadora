@@ -1,13 +1,19 @@
 const recordButton = document.getElementById('record');
 const stopButton = document.getElementById('stop');
+const deleteAllButton = document.getElementById('delete-all');
 const listaArchivos = document.getElementById('lista-archivos');
 const recordingIndicator = document.getElementById('recording-indicator');
 const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+const confirmDeleteAllButton = document.getElementById('confirmDeleteAllButton');
+const paginationContainer = document.getElementById('pagination-container');
 let mediaRecorder;
 let audioChunks = [];
 let audioElement = null;
 let archivoAEliminar;
 let updateIntervalId;
+
+let currentPage = 1;
+const pageSize = 10;
 
 // Intervalo de tiempo para actualizar la lista de archivos (en milisegundos)
 const updateInterval = 5000; // 5 segundos
@@ -48,10 +54,24 @@ stopButton.addEventListener('click', () => {
   recordingIndicator.classList.add('d-none');
 });
 
-function actualizarListaArchivos() {
-  fetch('/api/archivos')
+deleteAllButton.addEventListener('click', () => {
+  $('#confirmDeleteAllModal').modal('show');
+});
+
+confirmDeleteAllButton.addEventListener('click', () => {
+  fetch(`/api/archivos`, {
+    method: 'DELETE'
+  }).then(() => {
+    $('#confirmDeleteAllModal').modal('hide');
+    actualizarListaArchivos(currentPage);
+  });
+});
+
+function actualizarListaArchivos(page = 1) {
+  fetch(`/api/archivos?page=${page}&pageSize=${pageSize}`)
     .then(response => response.json())
-    .then(archivos => {
+    .then(data => {
+      const { archivos, total } = data;
       listaArchivos.innerHTML = '';
       archivos.forEach(archivo => {
         const li = document.createElement('li');
@@ -124,7 +144,28 @@ function actualizarListaArchivos() {
         li.appendChild(btnGroup);
         listaArchivos.appendChild(li);
       });
+
+      // Actualizar la paginación
+      actualizarPaginacion(total, page, pageSize);
     });
+}
+
+function actualizarPaginacion(total, currentPage, pageSize) {
+  const totalPages = Math.ceil(total / pageSize);
+  paginationContainer.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement('button');
+    pageButton.textContent = i;
+    pageButton.classList.add('btn', 'btn-primary', 'ml-1', 'mr-1');
+    if (i === currentPage) {
+      pageButton.classList.add('active');
+    }
+    pageButton.addEventListener('click', () => {
+      actualizarListaArchivos(i);
+    });
+    paginationContainer.appendChild(pageButton);
+  }
 }
 
 confirmDeleteButton.addEventListener('click', () => {
@@ -132,12 +173,12 @@ confirmDeleteButton.addEventListener('click', () => {
     method: 'DELETE'
   }).then(() => {
     $('#confirmDeleteModal').modal('hide');
-    actualizarListaArchivos();
+    actualizarListaArchivos(currentPage);
   });
 });
 
 // Actualizar la lista de archivos automáticamente cada cierto intervalo
-updateIntervalId = setInterval(actualizarListaArchivos, updateInterval);
+updateIntervalId = setInterval(() => actualizarListaArchivos(currentPage), updateInterval);
 
 // Actualizar la lista de archivos al cargar la página
-actualizarListaArchivos();
+actualizarListaArchivos(currentPage);
