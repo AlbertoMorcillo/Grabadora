@@ -6,6 +6,10 @@ const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 let mediaRecorder;
 let audioChunks = [];
 let archivoAEliminar;
+let updateIntervalId;
+
+// Intervalo de tiempo para actualizar la lista de archivos (en milisegundos)
+const updateInterval = 5000; // 5 segundos
 
 recordButton.addEventListener('click', () => {
   navigator.mediaDevices.getUserMedia({ audio: true })
@@ -87,6 +91,7 @@ function actualizarListaArchivos() {
           span.classList.add('d-none');
           input.classList.remove('d-none');
           input.focus();
+          clearInterval(updateIntervalId); // Pausar actualización automática
         });
         btnGroup.appendChild(btnEditar);
 
@@ -94,14 +99,32 @@ function actualizarListaArchivos() {
         btnGuardar.textContent = 'Guardar';
         btnGuardar.classList.add('btn', 'btn-primary', 'ml-2', 'd-none');
         btnGuardar.addEventListener('click', () => {
+          const nuevoNombre = input.value.trim();
+          if (!nuevoNombre.endsWith('.wav')) {
+            alert('El nombre del archivo debe terminar con .wav');
+            return;
+          }
           fetch(`/api/archivos/${archivo.id}`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ nombre: input.value })
-          }).then(() => {
-            actualizarListaArchivos();
+            body: JSON.stringify({ nombre: nuevoNombre })
+          }).then(response => {
+            if (response.ok) {
+              span.textContent = nuevoNombre; // Actualizar el nombre en el frontend
+              span.classList.remove('d-none');
+              input.classList.add('d-none');
+              btnGuardar.classList.add('d-none');
+              btnEditar.classList.remove('d-none');
+              actualizarListaArchivos(); // Actualizar la lista de archivos después de guardar
+              updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
+            } else {
+              alert('Error al guardar el nombre del archivo');
+            }
+          }).catch(error => {
+            console.error('Error al guardar el nombre del archivo:', error);
+            alert('Se produjo un error al guardar el nombre del archivo. Por favor, intenta nuevamente.');
           });
         });
         btnGroup.appendChild(btnGuardar);
@@ -111,6 +134,7 @@ function actualizarListaArchivos() {
           input.classList.add('d-none');
           btnGuardar.classList.add('d-none');
           btnEditar.classList.remove('d-none');
+          updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
         });
 
         input.addEventListener('input', () => {
@@ -142,4 +166,8 @@ confirmDeleteButton.addEventListener('click', () => {
   });
 });
 
+// Actualizar la lista de archivos automáticamente cada cierto intervalo
+updateIntervalId = setInterval(actualizarListaArchivos, updateInterval);
+
+// Actualizar la lista de archivos al cargar la página
 actualizarListaArchivos();

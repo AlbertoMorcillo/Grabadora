@@ -52,6 +52,9 @@ export const renombrarArchivo = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre } = req.body;
+    if (!nombre.endsWith('.wav')) {
+      return res.status(400).send('El nombre del archivo debe terminar con .wav');
+    }
     const archivoRenombrado = await drive.renombrarArchivo(id, nombre);
     res.json(archivoRenombrado);
   } catch (error) {
