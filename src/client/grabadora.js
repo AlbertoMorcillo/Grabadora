@@ -101,8 +101,17 @@ function actualizarListaArchivos(page = 1) {
               audioElement = new Audio(url);
               audioElement.play();
               span.textContent = `${archivo.name} (Reproduciendo...)`;
+
               audioElement.addEventListener('ended', () => {
                 span.textContent = archivo.name;
+              });
+
+              audioElement.addEventListener('pause', () => {
+                if (audioElement.currentTime === audioElement.duration) {
+                  span.textContent = archivo.name;
+                } else {
+                  span.textContent = `${archivo.name} (Pausado)`;
+                }
               });
             });
         });
@@ -114,7 +123,6 @@ function actualizarListaArchivos(page = 1) {
         btnPausar.addEventListener('click', () => {
           if (audioElement && !audioElement.paused) {
             audioElement.pause();
-            span.textContent = `${archivo.name} (Pausado)`;
           }
         });
         btnGroup.appendChild(btnPausar);
