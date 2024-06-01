@@ -5,6 +5,7 @@ const recordingIndicator = document.getElementById('recording-indicator');
 const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 let mediaRecorder;
 let audioChunks = [];
+let audioElement = null;
 let archivoAEliminar;
 let updateIntervalId;
 
@@ -61,74 +62,58 @@ function actualizarListaArchivos() {
         span.classList.add('nombre-archivo');
         li.appendChild(span);
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = archivo.name;
-        input.classList.add('form-control', 'd-none');
-        li.appendChild(input);
-
         const btnGroup = document.createElement('div');
         btnGroup.classList.add('btn-group');
 
         const btnReproducir = document.createElement('button');
-        btnReproducir.textContent = 'Reproducir';
+        btnReproducir.innerHTML = '<i class="fas fa-play"></i>';
         btnReproducir.classList.add('btn', 'btn-success', 'ml-2');
         btnReproducir.addEventListener('click', () => {
+          if (audioElement && !audioElement.paused) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            audioElement = null;
+          }
           fetch(`/api/archivos/${archivo.id}`)
             .then(response => response.blob())
             .then(blob => {
               const url = URL.createObjectURL(blob);
-              const audio = new Audio(url);
-              audio.play();
+              audioElement = new Audio(url);
+              audioElement.play();
+              span.textContent = `${archivo.name} (Reproduciendo...)`;
+              audioElement.addEventListener('ended', () => {
+                span.textContent = archivo.name;
+              });
             });
         });
         btnGroup.appendChild(btnReproducir);
 
-        
-
-        const btnGuardar = document.createElement('button');
-        btnGuardar.textContent = 'Guardar';
-        btnGuardar.classList.add('btn', 'btn-primary', 'ml-2', 'd-none');
-        btnGuardar.addEventListener('click', () => {
-          const nuevoNombre = input.value.trim();
-          if (!nuevoNombre.endsWith('.wav')) {
-            alert('El nombre del archivo debe terminar con .wav');
-            return;
+        const btnPausar = document.createElement('button');
+        btnPausar.innerHTML = '<i class="fas fa-pause"></i>';
+        btnPausar.classList.add('btn', 'btn-warning', 'ml-2');
+        btnPausar.addEventListener('click', () => {
+          if (audioElement && !audioElement.paused) {
+            audioElement.pause();
+            span.textContent = `${archivo.name} (Pausado)`;
           }
-          fetch(`/api/archivos/${archivo.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ nombre: nuevoNombre })
-          }).then(response => {
-            if (response.ok) {
-              span.textContent = nuevoNombre; // Actualizar el nombre en el frontend
-              span.classList.remove('d-none');
-              input.classList.add('d-none');
-              btnGuardar.classList.add('d-none');
-              actualizarListaArchivos(); // Actualizar la lista de archivos después de guardar
-              updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
-            } else {
-              alert('Error al guardar el nombre del archivo');
-            }
-          }).catch(error => {
-            console.error('Error al guardar el nombre del archivo:', error);
-            alert('Se produjo un error al guardar el nombre del archivo. Por favor, intenta nuevamente.');
-          });
         });
-        btnGroup.appendChild(btnGuardar);
+        btnGroup.appendChild(btnPausar);
 
-        input.addEventListener('blur', () => {
-          span.classList.remove('d-none');
-          input.classList.add('d-none');
-          btnGuardar.classList.add('d-none');;
-          updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
+        const btnDetener = document.createElement('button');
+        btnDetener.innerHTML = '<i class="fas fa-stop"></i>';
+        btnDetener.classList.add('btn', 'btn-danger', 'ml-2');
+        btnDetener.addEventListener('click', () => {
+          if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            span.textContent = archivo.name;
+            audioElement = null;
+          }
         });
-
+        btnGroup.appendChild(btnDetener);
 
         const btnBorrar = document.createElement('button');
-        btnBorrar.textContent = 'Borrar';
+        btnBorrar.innerHTML = '<i class="fas fa-trash"></i>';
         btnBorrar.classList.add('btn', 'btn-danger', 'ml-2');
         btnBorrar.addEventListener('click', () => {
           archivoAEliminar = archivo.id;

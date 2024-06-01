@@ -12,4 +12,19 @@ body {
   li {
     margin: 10px 0;
   }
-  
+
+#recording-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#lista-archivos .list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#lista-archivos .btn-group .btn {
+  margin-left: 5px;
+}
