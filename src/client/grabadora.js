@@ -84,16 +84,7 @@ function actualizarListaArchivos() {
         });
         btnGroup.appendChild(btnReproducir);
 
-        const btnEditar = document.createElement('button');
-        btnEditar.textContent = 'Editar';
-        btnEditar.classList.add('btn', 'btn-warning', 'ml-2');
-        btnEditar.addEventListener('click', () => {
-          span.classList.add('d-none');
-          input.classList.remove('d-none');
-          input.focus();
-          clearInterval(updateIntervalId); // Pausar actualización automática
-        });
-        btnGroup.appendChild(btnEditar);
+        
 
         const btnGuardar = document.createElement('button');
         btnGuardar.textContent = 'Guardar';
@@ -116,7 +107,6 @@ function actualizarListaArchivos() {
               span.classList.remove('d-none');
               input.classList.add('d-none');
               btnGuardar.classList.add('d-none');
-              btnEditar.classList.remove('d-none');
               actualizarListaArchivos(); // Actualizar la lista de archivos después de guardar
               updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
             } else {
@@ -132,15 +122,10 @@ function actualizarListaArchivos() {
         input.addEventListener('blur', () => {
           span.classList.remove('d-none');
           input.classList.add('d-none');
-          btnGuardar.classList.add('d-none');
-          btnEditar.classList.remove('d-none');
+          btnGuardar.classList.add('d-none');;
           updateIntervalId = setInterval(actualizarListaArchivos, updateInterval); // Reanudar actualización automática
         });
 
-        input.addEventListener('input', () => {
-          btnGuardar.classList.remove('d-none');
-          btnEditar.classList.add('d-none');
-        });
 
         const btnBorrar = document.createElement('button');
         btnBorrar.textContent = 'Borrar';
