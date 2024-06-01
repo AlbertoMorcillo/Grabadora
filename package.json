@@ -1,10 +1,12 @@
 {
+  "type": "module",
   "dependencies": {
     "config": "^3.3.11",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "googleapis": "^137.1.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "punycode": "^2.3.1"
   },
   "name": "grabadora",
   "description": "",
