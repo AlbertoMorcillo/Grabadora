@@ -1,15 +1,15 @@
-import express from 'express';
-import config from 'config';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import apiRoutes from './routes/api.js';
+import express from 'express'; // Importar express
+import config from 'config'; // Importar el módulo de configuración
+import path from 'path'; // Importar el módulo path
+import { fileURLToPath } from 'url'; // Importar la función fileURLToPath
+import apiRoutes from './routes/api.js'; // Importar las rutas de la API
 
 // Convertir `import.meta.url` a `__dirname`
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url); // Obtener el nombre del archivo actual
+const __dirname = path.dirname(__filename); // Obtener el directorio del archivo actual
 
 const app = express();
-const PORT = config.get('server.port');
+const PORT = config.get('server.port'); // Puerto del servidor
 
 // Middleware para manejar JSON
 app.use(express.json());
