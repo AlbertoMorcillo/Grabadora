@@ -11,9 +11,27 @@ let audioChunks = [];
 let audioElement = null;
 let archivoAEliminar;
 let updateIntervalId;
-
+let archivoIdParaEditar;
 let currentPage = 1;
 const pageSize = 10;
+
+document.getElementById('confirmEditButton').addEventListener('click', () => {
+  const nuevoNombre = document.getElementById('newNameInput').value; // Obtenemos el nuevo nombre del input en el modal
+  if (nuevoNombre) {
+    fetch(`/api/archivos/${archivoIdParaEditar}`, { // Usamos el id del archivo que guardaste antes
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ nombre: nuevoNombre + '.wav' }),
+    })
+    .then(() => {
+      actualizarListaArchivos(); // Actualiza la lista de archivos
+    })
+    .catch(error => console.error('Error:', error));
+  }
+  $('#editNameModal').modal('hide'); // Oculta el modal
+});
 
 // Intervalo de tiempo para actualizar la lista de archivos (en milisegundos)
 const updateInterval = 5000; // 5 segundos
@@ -126,6 +144,15 @@ function actualizarListaArchivos(page = 1) {
           }
         });
         btnGroup.appendChild(btnPausar);
+
+        const btnEditar = document.createElement('button');
+        btnEditar.innerHTML = '<i class="fas fa-edit"></i>';
+        btnEditar.classList.add('btn', 'btn-primary', 'ml-2');
+        btnEditar.addEventListener('click', () => {
+          archivoIdParaEditar = archivo.id; // Guarda el id del archivo que estás editando
+          $('#editNameModal').modal('show'); // Muestra el modal
+        });
+        btnGroup.appendChild(btnEditar);
 
         const btnDetener = document.createElement('button');
         btnDetener.innerHTML = '<i class="fas fa-stop"></i>';
